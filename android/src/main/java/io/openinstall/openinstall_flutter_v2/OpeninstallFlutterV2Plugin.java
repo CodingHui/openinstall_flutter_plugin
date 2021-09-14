@@ -28,10 +28,7 @@ import io.flutter.plugin.common.PluginRegistry;
  * OpeninstallFlutterV2Plugin
  */
 public class OpeninstallFlutterV2Plugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
+
     private MethodChannel channel;
     private ActivityPluginBinding activityPluginBinding;
     private volatile boolean initialized = false;
@@ -165,7 +162,11 @@ public class OpeninstallFlutterV2Plugin implements FlutterPlugin, MethodCallHand
         this.activityPluginBinding.addOnNewIntentListener(new PluginRegistry.NewIntentListener() {
             @Override
             public boolean onNewIntent(Intent intent) {
-                OpenInstall.getWakeUp(intent, wakeUpAdapter);
+                if (initialized) {
+                    OpenInstall.getWakeUp(intent, wakeUpAdapter);
+                } else {
+                    intentHolder = intent;
+                }
                 return false;
             }
         });
